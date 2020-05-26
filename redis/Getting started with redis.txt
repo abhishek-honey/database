@@ -1,0 +1,241 @@
+-- Getting started with redis.
+----------------------
+
+-- After you connect, let’s try to ping the server.
+PING
+__________________________________________________________________________________
+
+
+-- Type help followed by a space and then start typing any command.
+help
+-- 127.0.0.1:6379> help
+-- redis-cli 5.0.9
+-- To get help about Redis commands type:
+--       "help @<group>" to get a list of commands in <group>
+--       "help <command>" for help on <command>
+--       "help <tab>" to get a list of possible help topics
+--       "quit" to exit
+
+-- To set redis-cli preferences:
+--       ":set hints" enable online hints
+--       ":set nohints" disable online hints
+-- Set your preferences in ~/.redisclirc
+__________________________________________________________________________________
+
+
+-- So redis is a key value store the first command that we can use is get.
+GET FOO
+__________________________________________________________________________________
+
+
+-- Get all the keys
+KEYS * 
+__________________________________________________________________________________
+
+-- Set a key.
+SET 7wks http://www.sevenweeks.org/
+__________________________________________________________________________________
+
+
+-- Get 7wks key
+GET 7wks
+__________________________________________________________________________________
+
+
+-- Set multiple keys a time
+MSET gog http://www.google.com yah http://www.yahoo.com
+__________________________________________________________________________________
+
+
+-- Get multiple keys a time
+MGET gog yah
+__________________________________________________________________________________
+
+
+-- Although Redis stores strings, it recognizes integers and provides some simple operations for them like increment, decrement
+SET count 2
+INCR count
+GET count
+
+DECR count
+GET count
+
+-- Chacha... Bonus command. Enjoy 😉
+DECRBY count 5 
+INCRBY count 5 
+__________________________________________________________________________________
+
+
+-- Not possible to increment non integer, as expected
+SET bad_count "a"
+GET bad_count
+INCR bad_count -- Query 1 ERROR: ERR value is not an integer or out of range, 1 row affected
+__________________________________________________________________________________
+
+
+-- Transactions: MULTI block atomic commands
+MULTI
+SET prag http://pragprog.com
+INCR count
+EXEC
+-- Chacha... Bonus Enjoy: When using MULTI, the commands aren’t actually executed when we define them (similar to Postgres transactions). Instead, they are queued and then executed in sequence. 😉
+-- Chacha... Bonus Enjoy: Similar to ROLLBACK in SQL, you can stop a transaction with the DISCARD com- mand, which will clear the transaction queue. Unlike ROLLBACK, it won’t revert the database; it will simply not run the transaction at all.🤩
+__________________________________________________________________________________
+
+
+-- Complex Datatypes: Storing lists, hashes, sets, and sorted sets natively helps explain Redis’ popularity.
+
+-- These collection datatypes can contain a huge number of values (up to 2^32 elements or more than 4 billion) per key. That’s more than enough for all Facebook accounts to live as a list under a single key.
+
+-- Chacha, dekhiyey yanha pe redis wala thoda kabil bana 😉, like:
+-- 1. SET commands begin with S
+-- 2. Hashes with H
+-- 3. Sorted sets with Z.
+-- 4. List commands generally start with either an L (for left) or an R (for right), depending on the direction of the operation (such as LPUSH)
+
+-- Chacha... Bonus: You have already covered MSET and MGET 😂. Done hai...
+__________________________________________________________________________________
+
+
+-- Hash: Hashes are like nested Redis objects that can take any number of key-value pairs
+
+-- Chacha Bonus... Note that we used colons [:] within our key. This is a valid character that often logically separates a key into segments. It’s merely a matter of convention, with no deeper meaning in Redis.
+
+MSET user:honey:name "Abhishek Kumar Honey" user:honey:password Extremely_Fucked_Up_Consciousness_In_Multiverse
+-- Yeah... chacha this is real password 😇
+
+MGET user:honey:name user:honey:password
+
+-- Instead of separate keys, we can create a hash that contains its own key-value pairs.
+
+HMSET user:honey name "Abhishek Kumar Honey" password Extremely_Fucked_Up_Consciousness_In_Multiverse
+
+-- Get the key associated with this super key.
+HKEYS user:honey
+-- Get the value associated with this super key.
+HVALS user:honey
+-- Or we can get a single value, by passing in the Redis key, followed by the hash key. Here we get just the password.
+HGET user:honey password
+-- So, hashes can store only string values.
+
+-- Bonus chacha... More commands exist to delete hash fields (HDEL), increment an integer field value by some count (HINCRBY), or retrieve the number of fields in a hash (HLEN).
+__________________________________________________________________________________
+
+
+-- List: It contain multiple ordered values that can act both as queues (first value in, first value out) and as stacks (last value in, first value out). They also have more sophisticated actions for inserting somewhere in the middle of a list, constraining list size, and moving values between lists.
+
+RPUSH honey:wishlist 7wks gog prag
+LRANGE honey:wishlist 0 -1
+
+-- LREM removes from the given key some matching values. It also requires a number to know how many matches to remove. Setting the count to 0 as we do here just removes them all:
+LREM honey:wishlist 0 gog
+-- Bonus chacha... Setting the count greater than 0 will remove only that number of matches, and setting the count to a negative number will remove that number of matches but scan the list from the end (right side).
+
+-- To remove and retrieve each value in the order we added them (like a queue), we can pop them off from the left (head) of the list.
+LPOP honey:wishlist
+
+-- To act as a stack, after you RPUSH the values, you would RPOP from the end of the list. All of these operations are performed in constant time.
+
+
+-- Bonus chacha... Tough one🧐 Suppose we wanted to remove values from our wishlist and move them to another list of visited sites. To execute this move atomically, we could wrap pop and push actions within a multiblock. In Ruby these steps might look something like this (you can’t use the CLI here because you must save the popped value, so we used the redis-rb gem):
+
+-- redis.multi do
+-- site = redis.rpop('eric:wishlist') redis.lpush('eric:visited', site)
+-- end
+
+-- But Redis provides a single command for popping values from the tail of one list and pushing to the head of another. It’s called RPOPLPUSH (right pop, left push).
+RPOPLPUSH honey:wishlist honey:visited
+LRANGE honey:visited 0 -1
+LRANGE honey:wishlist 0 -1
+
+-- Blocking Lists: 2 terminals required.
+BRPOP comments 300
+LPUSH comments "Prag is great! I buy all my books there."
+__________________________________________________________________________________
+
+
+-- Set: Sets are unordered collections with no duplicate values and are an excellent choice for performing complex operations between two or more key values, such as unions or intersections.
+
+SADD news nytimes.com pragprog.com
+SMEMBERS news
+SADD tech pragprog.com apple.com
+SMEMBERS tech
+-- To find the intersection of websites that both provide news and are technology focused, we use the SINTER command.
+SINTER news tech
+-- To find all news sites that are not tech sites, use SDIFF:
+SDIFF news tech
+-- We can also build a union of websites that are either news or tech. Since it’s a set, any duplicates are dropped.
+SUNION news tech
+-- That set of values can also be stored directly into a new set (SUNIONSTORE desti- nation key [key ...]).
+SUNIONSTORE websites news tech
+SMEMBERS websites
+-- Bonus chacha... Similar commands exist for storing intersections (SINTERSTORE) and diffs (SDIFFSTORE).
+-- And like LLEN finds the length of a list, SCARD (set cardinality) counts the set; it’s just harder to remember.
+__________________________________________________________________________________
+
+
+-- Sorted Sets: Whereas other Redis datatypes we’ve looked at so far easily map to common programming language constructs, sorted sets take something from each of the previous datatypes. They are ordered like lists and are unique like sets. They have field-value pairs like hashes, but rather than string fields, they are instead numeric scores that denote the order of the values. You can think of sorted sets as like a random access priority queue
+
+-- Internally, sorted sets keep values in order, so inserts can take log(N) time to insert (where N is the size of the set), rather than the constant time complexity of hashes or lists.
+ZADD visits 500 7wks 9 gog 9999 prag
+ZINCRBY visits 1 prag
+ZINCRBY visits -1 prag
+
+ZRANGE visits 0 1
+ZREVRANGE visits 0 -1 WITHSCORES
+-- So, this will return all scores where 9 <= score <= 10,000:
+ZRANGEBYSCORE visits 9 9999
+-- But the following will return 9 < score <= 10,000:
+ZRANGEBYSCORE visits (9 9999
+-- We can also range by both positive and negative values, including infinities. This returns the entire set.
+ZRANGEBYSCORE visits -inf inf
+-- TO reverse we can use ZREVRANGEBYSCORE
+-- Along with retrieving a range of values by rank (index) or score, ZREMRANGE-
+-- BYRANK and ZREMRANGEBYSCORE, respectively, remove values by rank or score.
+
+-- Unions
+-- The union operation looks like this:
+-- ZUNIONSTORE destination numkeys key [key ...]
+-- [WEIGHTS weight [weight ...]] [AGGREGATE SUM|MIN|MAX]
+
+ZADD votes 2 7wks 0 gog 9001 prag
+ZUNIONSTORE importance 2 visits votes WEIGHTS 1 2 AGGREGATE SUM
+ZRANGEBYSCORE importance -inf inf WITHSCORES
+-- This command is powerful in other ways too. For example, if we need to double all scores of a set, we can union a single key with a weight of 2 and store it back into itself.
+ZUNIONSTORE votes 1 votes WEIGHTS 2
+ZRANGE votes 0 -1 WITHSCORES
+-- Sorted sets contain a similar command (ZINTERSTORE)to perform intersections.
+__________________________________________________________________________________
+
+
+-- Expiry: Chacha this is the most important one.
+-- A common use case for a key-value system like Redis is as a fast-access cache for data that’s more expensive to retrieve or compute. Expiration helps keep the total key set from growing unbounded, by tasking Redis to delete a key- value after a certain time has passed.
+
+-- Marking a key for expiration requires the EXPIRE command, an existing key, and a time to live in seconds. Here we set a key and set it to expire in ten seconds. We can check whether the key EXISTS within ten seconds and it returns a 1 (true). If we wait to execute, it will eventually return a 0 (false).
+SET ice "I'm melting..."
+EXPIRE ice 10
+EXISTS ice
+GET ice
+
+-- Setting and expiring keys is so common that Redis provides a shortcut com- mand called SETEX
+SETEX ice 10 "I'm melting..."
+TTL ice
+-- At any moment before the key expires, you can remove the timeout by running PERSIST key. If you do not want ice to melt then persist it. Any way entropy is increasing so later at some point ice will definitely melt.😂
+PERSIST ice
+-- A common trick for keeping only recently used keys is to update the expire time whenever you retrieve a value. This is the most recently used (MRU) caching algorithm to ensure your most recently used keys will remain in Redis, while the neglected keys will just expire as normal.
+__________________________________________________________________________________
+
+
+-- Database Namespaces
+-- So far, we’ve interacted only with a single namespace. Just like buckets in Riak, sometimes we need to separate keys by namespace. For example, if you wrote an internationalized key-value store, you could store different translated responses in different namespaces. The key greeting could be set to “guten tag” in a German namespace and “bonjour” in French. When a user selects their language, the application just pulls all values from the namespace assigned.
+
+-- In Redis nomenclature, a namespace is called a database and is keyed by number. So far, we’ve always interacted with the default namespace 0 (also known as database 0).
+
+-- Since all databases are running in the same server instance, Redis lets us shuffle keys around with the MOVE command. Here we move greeting to database 
+-- MOVE greeting 2
+__________________________________________________________________________________
+
+
+-- Redis has plenty of other commands for actions such as renaming keys (RENAME), determining the type of a key’s value (TYPE), and deleting a key-value (DEL). There’s also the painfully dangerous FLUSHDB, which removes all keys from this Redis database, and its apocalyptic cousin, FLUSHALL, which removes all keys from all Redis databases. Check out the online documentation for the full list of Redis commands.
+
+__________________________________________________________________________________
