@@ -19,7 +19,7 @@
   -  These simple systems are normally not adequate for complex applications. On the other hand, it is exactly this simplicity, that makes such systems attractive in certain circumstances. For example resource-efficient key-value stores are often applied in embedded systems or as high performance in-process databases.
 
   - Examples
-    1.  Redis [link](https://github.com/abhishek-honey/database/tree/master/redis)
+    1.  Redis [link](https://github.com/abhishek-honey/database/blob/master/redis/Getting%20started%20with%20redis.txt)
     2.  Amazon DynamoDB
     3.  Microsoft Azure Cosmos DB
     4.  Memcached
@@ -32,7 +32,7 @@
   - Document stores often use internal notations, which can be processed directly in applications, mostly JSON. JSON documents of course can also be stored as pure text in key-value stores or relational database systems. That would, however, require client-side processing of the structures, which has the disadvantage that the features offered by document stores (such as secondary indexes) are not available.
   - Examples
 
-    1.  MongoDB
+    1.  MongoDB [link](https://github.com/abhishek-honey/database/blob/master/mongo/mongo.md)
     2.  Amazon DynamoDB
     3.  Microsoft Azure Cosmos DB
     4.  Couchbase
