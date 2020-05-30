@@ -238,7 +238,7 @@ db.towns.find(
 </details>
 
 
-#### See the power of partial matching `\`
+#### See the power of partial matching `/`
 
 ```
 db.towns.find(
