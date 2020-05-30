@@ -7,11 +7,31 @@ MongoDB is in many ways like a power drill. Your ability to complete a task is f
 ```
 mongo book
 ```
-[![image.png](https://i.postimg.cc/HWRXBMg7/image.png)](https://postimg.cc/mh3Prthb)
+<details><summary>Screenshot</summary>
+<p>
+<a href='https://postimg.cc/3dmdd110' target='_blank'>
+<img src='https://i.postimg.cc/PrFZVF8y/image.png' border='0' alt='image'>
+</img>
+</a>
+</p>
+</details>
 
-[![image.png](https://i.postimg.cc/pLXGz7MB/image.png)](https://postimg.cc/pp4JtsT9)
-
-[![image.png](https://i.postimg.cc/PrFZVF8y/image.png)](https://postimg.cc/3dmdd110)
-
-
-*
+* We’re currently in the book database, but you can view others via `show dbs` and switch databases with the `use` command.
+* Since Mongo is schema- less, there is no need to define anything up front; merely using it is enough. What’s more, our book database doesn’t really exist until we first add values into it. The following code creates/inserts a towns collection:
+```
+db.towns.insert({
+name: "New York",
+population: 22200000,
+last_census: ISODate("2009-07-31"), famous_for: [ "statue of liberty", "food" ], mayor : {
+name : "Michael Bloomberg",
+party : "I" }
+})
+```
+<details><summary>Screenshot</summary>
+<p>
+<a href='https://postimg.cc/Xp85x3Gk' target='_blank'><img src='https://i.postimg.cc/cLqcxLd2/image.png' border='0' alt='image'/></a>
+</img><p>Robo3T</p>
+<a href='https://postimg.cc/pm3NpmQ0' target='_blank'><img src='https://i.postimg.cc/KY8mpL1y/image.png' border='0' alt='image'/></a>
+</a>
+</p>
+</details>
