@@ -7,6 +7,6 @@ MongoDB is in many ways like a power drill. Your ability to complete a task is f
 ```
 mongo book
 ```
-![Terminal Screenshot](https://ibb.co/PM0mJWz)
+[![Screenshot.png](https://i.postimg.cc/XJD7N98K/image.png)](https://postimg.cc/G8G1q869)
 
 *
