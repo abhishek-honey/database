@@ -37,13 +37,13 @@ public class MongoAtlas {
 
 	@PostConstruct
 	public void initMongoAtlas() {
-		System.out.println(jdbcUrl);
+		System.out.println("+++++++ JDBC URL: "+jdbcUrl);
 
 		mongoClient = MongoClients.create(jdbcUrl);
 
-//		initDatabaseByName("sample_airbnb");
-//		MongoCollection<Document> collection = getCollection("sample_airbnb", "listingsAndReviews");
-//		System.out.println(collection.countDocuments());
+		initDatabaseByName("sample_airbnb");
+		MongoCollection<Document> collection = getCollection("sample_airbnb", "listingsAndReviews");
+		System.out.println(collection.countDocuments());
 
 //		MongoDatabase database = mongoClient.getDatabase("sample_airbnb");
 //		MongoCollection<Document> collection = database.getCollection("listingsAndReviews");
