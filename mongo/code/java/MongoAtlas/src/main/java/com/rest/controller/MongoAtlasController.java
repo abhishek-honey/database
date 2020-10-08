@@ -1,4 +1,4 @@
-package com.mongo.atlas.controller;
+package com.rest.controller;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mongo.atlas.controller.impl.MongoAtlasControllerImpl;
-import com.mongo.atlas.dto.Greeting;
+import com.rest.controller.impl.MongoAtlasControllerImpl;
+import com.rest.dto.Greeting;
 
 @RestController
 public class MongoAtlasController {

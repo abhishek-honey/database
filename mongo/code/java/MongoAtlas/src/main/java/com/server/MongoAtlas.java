@@ -1,9 +1,8 @@
-package com.mongo.atlas.demo;
+package com.server;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.bson.Document;
@@ -35,9 +34,9 @@ public class MongoAtlas {
 		}
 	}
 
-	@PostConstruct
+//	@PostConstruct
 	public void initMongoAtlas() {
-		System.out.println("+++++++ JDBC URL: "+jdbcUrl);
+		System.out.println("+++++++ JDBC URL: " + jdbcUrl);
 
 		mongoClient = MongoClients.create(jdbcUrl);
 
@@ -48,13 +47,19 @@ public class MongoAtlas {
 //		MongoDatabase database = mongoClient.getDatabase("sample_airbnb");
 //		MongoCollection<Document> collection = database.getCollection("listingsAndReviews");
 //		System.out.println(collection);
-//
-//		BasicDBObject query = new BasicDBObject();
-//		query.put("name", "Ribeira Charming Duplex");
-//		MongoCursor<Document> cursor = collection.find(query).iterator();
-//		while (cursor.hasNext()) {
-//			System.out.println(cursor.next().toJson());
-//		}
+
+		MongoDatabase mongoDatabase = databases.get("sample_airbnb");
+
+		Map<String, Object> map = new HashMap<>();
+		map.put("honey", "anjali");
+		map.put("ana", "duke");
+		map.put("berry", "goose");
+		map.put("santa", "supply");
+
+		Document document = new Document(map);
+		mongoDatabase.getCollection("honey_collection").insertOne(document);
+		System.out.println("Successfully inserted.");
+
 	}
 
 	public void initDatabaseByName(String databaseName) {

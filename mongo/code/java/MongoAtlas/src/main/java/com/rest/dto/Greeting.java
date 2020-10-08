@@ -1,4 +1,4 @@
-package com.mongo.atlas.dto;
+package com.rest.dto;
 
 public class Greeting {
 	private final long id;
