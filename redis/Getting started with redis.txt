@@ -238,4 +238,7 @@ ________________________________________________________________________________
 
 -- Redis has plenty of other commands for actions such as renaming keys (RENAME), determining the type of a key’s value (TYPE), and deleting a key-value (DEL). There’s also the painfully dangerous FLUSHDB, which removes all keys from this Redis database, and its apocalyptic cousin, FLUSHALL, which removes all keys from all Redis databases. Check out the online documentation for the full list of Redis commands.
 
+***********
+You can also update a class as the value in redis. 
+
 __________________________________________________________________________________
